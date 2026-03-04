@@ -11,19 +11,29 @@ from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAct
 def scan_edge_folder(edge_config_folder):
     profiles = {}
     local_state_path = os.path.join(edge_config_folder, 'Local State')
-    
+
     if not os.path.exists(local_state_path):
         return profiles
 
-    with open(local_state_path, 'r', encoding='utf-8') as f:
-        local_state = json.load(f)
-        # Chromium-based browsers store profile info here
-        cache = local_state.get('profile', {}).get('info_cache', {})
-        for folder, profile_data in cache.items():
-            profiles[folder] = {
-                'name': profile_data.get('name', folder),
-                'email': profile_data.get('user_name', '')
-            }
+    try:
+        with open(local_state_path, 'r', encoding='utf-8') as f:
+            local_state = json.load(f)
+            cache = local_state.get('profile', {}).get('info_cache', {})
+            for folder, profile_data in cache.items():
+                # PRIORITY:
+                # 1. given_name (User defined name like 'Personal')
+                # 2. name (Generic name like 'Profile 2')
+                # 3. folder (Folder name like 'Profile 1')
+                display_name = profile_data.get('given_name') or \
+                               profile_data.get('name') or \
+                               folder
+
+                profiles[folder] = {
+                    'name': display_name,
+                    'email': profile_data.get('user_name', '')
+                }
+    except Exception:
+        pass
 
     # Verify folders actually exist on disk
     for folder in list(profiles.keys()):
@@ -48,11 +58,12 @@ class KeywordQueryEventListener(EventListener):
             query = query.strip().lower()
             for folder in list(profiles.keys()):
                 name = profiles[folder]['name'].lower()
-                if query not in name:
+                email = profiles[folder]['email'].lower()
+                if query not in name and query not in email:
                     profiles.pop(folder)
 
         entries = []
-        for folder in profiles:
+        for folder in sorted(profiles.keys()):
             # Look for a profile picture in the profile folder
             icon_path = os.path.join(edge_config_folder, folder, 'Edge Profile.png')
             if not os.path.exists(icon_path):
@@ -67,7 +78,7 @@ class KeywordQueryEventListener(EventListener):
                     'opt': ['--profile-directory={0}'.format(folder)]
                 }, keep_app_open=False)
             ))
-        
+
         if not entries:
             entries.append(ExtensionResultItem(
                 icon='images/icon.png',
