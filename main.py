@@ -61,7 +61,7 @@ class KeywordQueryEventListener(EventListener):
             entries.append(ExtensionResultItem(
                 icon=icon_path,
                 name=profiles[folder]['name'],
-                description=profiles[folder]['email'] or f"Profile directory: {folder}",
+                description=f"{profiles[folder]['email']} (Folder: {folder})",
                 on_enter=ExtensionCustomAction({
                     'edge_cmd': extension.preferences['edge_cmd'],
                     'opt': ['--profile-directory={0}'.format(folder)]
