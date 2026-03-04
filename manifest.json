@@ -3,7 +3,7 @@
   "name": "Edge Profiles",
   "description": "Launch Microsoft Edge with different user profiles",
   "developer_name": "Your Name",
-  "icon": "images/icon.png",
+  "icon": "images/microsoft.png",
   "options": {
     "query_debounce": 0.1
   },

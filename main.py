@@ -70,7 +70,7 @@ class KeywordQueryEventListener(EventListener):
         for folder in sorted(profiles.keys(), key=lambda x: profiles[x]['name']):
             icon_path = os.path.join(edge_config_folder, folder, 'Edge Profile.png')
             if not os.path.exists(icon_path):
-                icon_path = 'images/icon.png'
+                icon_path = 'images/microsoft.png'
 
             entries.append(ExtensionResultItem(
                 icon=icon_path,
