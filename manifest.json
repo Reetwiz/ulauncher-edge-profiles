@@ -1,0 +1,33 @@
+{
+  "required_api_version": "^2.0.0",
+  "name": "Edge Profiles",
+  "description": "Launch Microsoft Edge with different user profiles",
+  "developer_name": "Your Name",
+  "icon": "images/icon.png",
+  "options": {
+    "query_debounce": 0.1
+  },
+  "preferences": [
+    {
+      "id": "keyword",
+      "type": "keyword",
+      "name": "Edge Profile",
+      "description": "Keyword to invoke this extension",
+      "default_value": "edge"
+    },
+    {
+      "id": "edge_folder",
+      "type": "input",
+      "name": "Edge Configuration Folder",
+      "description": "Path to Edge config. Stable: ~/.config/microsoft-edge | Dev: ~/.config/microsoft-edge-dev",
+      "default_value": "~/.config/microsoft-edge"
+    },
+    {
+      "id": "edge_cmd",
+      "type": "input",
+      "name": "Edge Executable",
+      "description": "The command to run Edge. Usually microsoft-edge-stable or microsoft-edge.",
+      "default_value": "microsoft-edge-stable"
+    }
+  ]
+}
