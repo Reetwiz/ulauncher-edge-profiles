@@ -19,11 +19,12 @@ def scan_edge_folder(edge_config_folder):
         with open(local_state_path, 'r', encoding='utf-8') as f:
             local_state = json.load(f)
             cache = local_state.get('profile', {}).get('info_cache', {})
+
             for folder, profile_data in cache.items():
-                # PRIORITY:
-                # 1. given_name (User defined name like 'Personal')
-                # 2. name (Generic name like 'Profile 2')
-                # 3. folder (Folder name like 'Profile 1')
+                # PRIORITY ORDER for naming:
+                # 1. given_name (This is "General" or "Personal")
+                # 2. name (This is "Profile 2")
+                # 3. folder (This is "Profile 1")
                 display_name = profile_data.get('given_name') or \
                                profile_data.get('name') or \
                                folder
@@ -57,14 +58,16 @@ class KeywordQueryEventListener(EventListener):
         if query:
             query = query.strip().lower()
             for folder in list(profiles.keys()):
+                # We now check against the friendly name (e.g., "General")
                 name = profiles[folder]['name'].lower()
                 email = profiles[folder]['email'].lower()
+
                 if query not in name and query not in email:
                     profiles.pop(folder)
 
         entries = []
-        for folder in sorted(profiles.keys()):
-            # Look for a profile picture in the profile folder
+        # Sort by name so they appear alphabetically
+        for folder in sorted(profiles.keys(), key=lambda x: profiles[x]['name']):
             icon_path = os.path.join(edge_config_folder, folder, 'Edge Profile.png')
             if not os.path.exists(icon_path):
                 icon_path = 'images/icon.png'
@@ -83,7 +86,7 @@ class KeywordQueryEventListener(EventListener):
             entries.append(ExtensionResultItem(
                 icon='images/icon.png',
                 name='No profiles found',
-                description='Check your Edge configuration folder in extension settings',
+                description='Try a different search or check Edge config path',
                 on_enter=None
             ))
 
@@ -94,7 +97,6 @@ class ItemEnterEventListener(EventListener):
         data = event.get_data()
         edge_path = data['edge_cmd']
         opt = data['opt']
-        # Execute the launch command
         subprocess.Popen([edge_path] + opt)
 
 if __name__ == '__main__':
