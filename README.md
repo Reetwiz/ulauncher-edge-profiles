@@ -48,6 +48,9 @@ The extension provides three configurable options:
 
 The extension reads your Edge's `Local State` file to discover all configured profiles, then launches Edge with the `--profile-directory` flag to open the selected profile.
 
+wmctrl works as following:
+```wmctrl -ia $(wmctrl -l | grep -i "General" | grep -i "Edge" | awk '{print $1}' | head -n 1)```
+
 ## Requirements
 
 - Ulauncher 5.0+
